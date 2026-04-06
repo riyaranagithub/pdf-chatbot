@@ -1,32 +1,32 @@
 "use client";
 
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
   const { data: session } = useSession();
-   console.log("session: ",session);
-  if (session) {
-    return (
-      <div>
-        <h2>Welcome {session.user.name}</h2>
+  const router = useRouter();
 
-        <button onClick={() => signOut()}>
-          Logout
-        </button>
-      </div>
-    );
-  }
+  // Redirect if already logged in
+  useEffect(() => {
+    if (session) {
+      router.push("/");
+    }
+  }, [session, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 text-black">
-       
-      < div className="bg-white p-6 rounded-2xl shadow-md w-87.5 text-center">
-      <h1 className="text-2xl "> SignIn with Google </h1>
+      <div className="bg-white p-6 rounded-2xl shadow-md w-87.5 text-center">
+        <h1 className="text-2xl">Sign In with Google</h1>
 
-      <button onClick={() => signIn("google", { callbackUrl: "/" })} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition cursor-pointer">
-          SignIn
-      </button>
-        </div>
+        <button
+          onClick={() => signIn("google", { callbackUrl: "/" })}
+          className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition cursor-pointer"
+        >
+          Sign In
+        </button>
+      </div>
     </div>
   );
 }
