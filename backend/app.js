@@ -2,7 +2,8 @@ import express from "express";
 import env from "dotenv";
 import uploadRoutes from "./routes/uploads.js";
 import PdfRoutes from "./routes/get_pdfs.js";
-
+import pdfLoadRouter from "./routes/pdf_loader.js";
+import askRoute from "./routes/ask.js";
 
 import cors from "cors";
 import connectDB from "./utils/mongodb.js"; // <-- import mongoose connection
@@ -14,6 +15,8 @@ app.use(cors());
 app.use(express.json());
 app.use("/upload", uploadRoutes);
 app.use("/pdfRoute", PdfRoutes);
+app.use("/pdfLoaderRouter", pdfLoadRouter);
+app.use("/ask", askRoute);
 
 app.get("/", (req, res) => {
   res.send("Backend running 🚀");

@@ -9,22 +9,11 @@ const UploadedPDFSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    cloudinary_url: {
-      type: String,
-      required: true,
-    },
-    cloudinary_public_id: {
-      type: String,
-      required: true,
-    },
     filename: {
       type: String,
       required: true,
     },
-    format: {
-      type: String,
-      required: true,
-    },
+
     size_bytes: {
       type: Number,
       required: true,

@@ -3,6 +3,13 @@
 import { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 
+//type for pdf
+type Pdf = {
+    _id: string;
+    filename: string;
+    cloudinary_url: string;
+};
+
 export default function UploadUI() {
 
     const { data: session } = useSession();
@@ -21,9 +28,7 @@ export default function UploadUI() {
 
 
     // Dummy PDF list (replace with backend later)
-    const [pdfs, setPdfs] = useState([
-        { _id: "1", filename: "example1.pdf" }
-    ]);
+    const [pdfs, setPdfs] = useState<Pdf[]>([]);
 
 
 
@@ -44,8 +49,13 @@ export default function UploadUI() {
             }
         };
 
+
+
         fetchPdfs();
-    }, [session,loading]);
+    }, [session, loading]);
+
+
+
 
     // Upload PDF
     const handleUpload = async () => {
@@ -57,7 +67,7 @@ export default function UploadUI() {
 
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("userEmail", session.user?.email || "unknown");
+        formData.append("user_email", session.user?.email || "unknown");
 
         try {
             const res = await fetch(
@@ -70,30 +80,33 @@ export default function UploadUI() {
 
             if (!res.ok) throw new Error();
 
+
             setMessage("File uploaded successfully ✅");
         } catch {
             setMessage("Upload failed ❌");
+
         }
 
         setLoading(false);
     };
 
-    // Chat UI (dummy response)
-    const handleAsk = async () => {
-        if (!question) return;
+    const askQuestion = async () => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ask`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                question: "What is the summary of the pdf?",
+                user_email: session?.user?.email,
+            }),
+        });
 
-        // add user message
-        setChat((prev) => [...prev, { role: "user", text: question }]);
-
-        // dummy bot response (replace with backend later)
-        setChat((prev) => [
-            ...prev,
-            { role: "user", text: question },
-            { role: "bot", text: "🤖 Answer will come from backend here..." },
-        ]);
-
-        setQuestion("");
+        const data = await res.json();
+        console.log("answer for question: ", data.answer);
     };
+
+    // askQuestion();
 
     return (
         <div className="h-screen flex bg-gray-100 text-black">
@@ -103,7 +116,7 @@ export default function UploadUI() {
                 <h2 className="text-xl font-semibold mb-4">📄 Your PDFs</h2>
 
                 <div className="flex-1 overflow-y-auto space-y-2">
-                    {pdfs.map((pdf) => (
+                    {pdfs?.map((pdf) => (
                         <div key={pdf._id} className={`p-3 rounded-lg cursor-pointer ${selectedPdf === pdf.filename ? "bg-blue-500 text-white" : "bg-gray-200"}`} onClick={() => setSelectedPdf(pdf.filename)}>
                             {pdf.filename}
                         </div>
@@ -164,8 +177,8 @@ export default function UploadUI() {
                         >
                             <div
                                 className={`px-4 py-2 rounded-xl max-w-[70%] ${msg.role === "user"
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-gray-200"
+                                    ? "bg-blue-500 text-white"
+                                    : "bg-gray-200"
                                     }`}
                             >
                                 {msg.text}
@@ -184,7 +197,7 @@ export default function UploadUI() {
                         className="flex-1 border p-3 rounded-xl outline-none"
                     />
                     <button
-                        onClick={handleAsk}
+                        // onClick={handleAsk}
                         className="bg-green-500 text-white px-6 rounded-xl hover:bg-green-600"
                     >
                         Send

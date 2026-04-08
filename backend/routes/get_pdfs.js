@@ -7,17 +7,20 @@ const PdfRoutes = express.Router();
 PdfRoutes.get("/get_pdfs", async (req, res) => {
   try {
     const { user_email } = req.query;
-    console.log("Received request for PDFs with email:", user_email);
 
-    const all = await uploadedPdf.find();
-console.log("ALL DATA:", all);
+   
 
     if (!user_email) {
       return res.status(400).json({ message: "Email required" });
     }
 
-    const files = await uploadedPdf.find({ user_email: user_email }).select("filename");
-    console.log("Fetched PDFs:", files);
+const files = await uploadedPdf
+  .find({ user_email: user_email })
+  .select({
+    filename: 1,
+    cloudinary_url: 1,
+  });
+ 
 
     res.json({ files });
   } catch (error) {
