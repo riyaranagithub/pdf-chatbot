@@ -21,12 +21,18 @@ askRoute.post("/", async (req, res) => {
       return res.status(400).json({ error: "Question is required" });
     }
 
+    //creating vector store retriever 
+    const retriever = chromaStore.asRetriever({
+      k: 3,
+      filter: { user_email }
+    });
+
     // 🔍 vector search
-    const results = await chromaStore.similaritySearch(
-      question,
-      3,
-      { user_email }
-    );
+    const results = await retriever.invoke(question);
+
+    if (!results.length) {
+      return res.status(404).json({ error: "No relevant documents found" });
+    }
 
     const context = results.map((doc) => doc.pageContent).join("\n---\n");
 

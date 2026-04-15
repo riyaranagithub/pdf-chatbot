@@ -112,29 +112,7 @@ uploadRoutes.post("/file", upload.single("file"), async (req, res) => {
     console.log("✅ Stored successfully in Chroma");
 
 
- 
 
-
-
-
-
-
-/*
-    // ☁️ Store in Pinecone
-    console.log("🚀 Sending data to Pinecone...");
-
-    
-
-    const result = await PineconeStore.fromDocuments(docsWithMetadata, embeddings, {
-      pineconeIndex,
-      namespace: user_email,
-    });
-
-    console.log("📊 Pinecone response:", result);
-
-    console.log("✅ Stored successfully in Pinecone");
-
-    */
 
     // 💾 Save in MongoDB
    /* const newUpload = new uploadedPdf({

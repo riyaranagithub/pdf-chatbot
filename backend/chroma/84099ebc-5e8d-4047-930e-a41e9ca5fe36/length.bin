@@ -1,15 +1,1 @@
-* More accurate answers
-* Uses latest or private data
-* Cost-efficient (no need to retrain model)
-7. Disadvantages
-* Slightly slower (extra retrieval step)
-* Needs proper chunking and embeddings
-* Requires setup (DB + pipeline)
-8. Tools used in RAG
-* LangChain
-* LlamaIndex
-* OpenAI / Gemini models
-* Vector DBs (FAISS, Pinecone, Weaviate)
-9. Simple Formula
-RAG = Retrieval + Generation
-10. Use Cases
+invalid type: string "* More accurate answers\n* Uses latest or private data\n* Cost-efficient (no need to retrain model)\n7. Disadvantages\n* Slightly slower (extra retrieval step)\n* Needs proper chunking and embeddings\n* Requires setup (DB + pipeline)\n8. Tools used in RAG\n* LangChain\n* LlamaIndex\n* OpenAI / Gemini models\n* Vector DBs (FAISS, Pinecone, Weaviate)\n9. Simple Formula\nÿÿÿÿÿÿÿ
