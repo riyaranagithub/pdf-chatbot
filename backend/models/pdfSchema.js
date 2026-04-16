@@ -1,7 +1,7 @@
-// models/UploadedPDF.js
+// models/pdfSchema.js
 import mongoose from "mongoose";
 
-const UploadedPDFSchema = new mongoose.Schema(
+const pdfSchema = new mongoose.Schema(
   {
     user_email: {
       type: String,
@@ -9,7 +9,7 @@ const UploadedPDFSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    filename: {
+    file_name: {
       type: String,
       required: true,
     },
@@ -29,4 +29,4 @@ const UploadedPDFSchema = new mongoose.Schema(
 );
 
 // Avoid recompiling model if already exists
-export default mongoose.models.UploadedPDF || mongoose.model("UploadedPDF", UploadedPDFSchema);
+export default mongoose.models.pdfSchema || mongoose.model("Pdf", pdfSchema);

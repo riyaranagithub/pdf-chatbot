@@ -1,22 +1,23 @@
 import express from "express";
 import env from "dotenv";
-import uploadRoutes from "./routes/uploads.js";
-import PdfRoutes from "./routes/get_pdfs.js";
-import pdfLoadRouter from "./routes/pdf_loader.js";
-import askRoute from "./routes/ask.js";
-
 import cors from "cors";
 import connectDB from "./utils/mongodb.js"; // <-- import mongoose connection
+
+import pdfRoute from "./routes/pdfRoute.js";
+import sessionRoute from "./routes/sessionRoute.js";
+import chatRouter from "./routes/chatRoute.js";
 
 env.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use("/upload", uploadRoutes);
-app.use("/pdfRoute", PdfRoutes);
-app.use("/pdfLoaderRouter", pdfLoadRouter);
-app.use("/ask", askRoute);
+
+// Routes
+app.use("/pdf", pdfRoute);
+app.use("/session", sessionRoute);
+app.use("/chat",chatRouter)
+
 
 app.get("/", (req, res) => {
   res.send("Backend running 🚀");

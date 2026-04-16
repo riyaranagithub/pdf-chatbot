@@ -1,22 +1,20 @@
 import multer from "multer";
 import { Router } from "express";
-import uploadedPdf from "../models/uploadedPdf.js";
+import Pdf from "../../models/pdfSchema.js";
 import fs from "fs";
 import path from "path";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { chromaStore } from "../utils/cromaStore.js";
+import { v4 as uuidv4 } from "uuid";
 
-
-
-const uploadRoutes = Router();
 
 // Multer memory storage
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-uploadRoutes.post("/file", upload.single("file"), async (req, res) => {
+export const pdfUpload =async (req, res) => {
   console.log("📥 Upload request received");
 
   try {
@@ -72,33 +70,24 @@ uploadRoutes.post("/file", upload.single("file"), async (req, res) => {
       model: "gemini-embedding-2-preview",
     });
 
-    console.log("🧠 Embeddings initialized");
-    // console.log("Embedding length for chunk 0:", embeddings[0].length);
-
-    // 🔍 Test embedding (IMPORTANT DEBUG)
-    const testEmbedding = await embeddings.embedQuery("test");
-    console.log("🔍 Test embedding created, length:", testEmbedding.length);
-
-    // const reducedEmb = embeddings.slice(0, 2048);
-
-
-    if (!testEmbedding || !testEmbedding.length) {
-      throw new Error("❌ Embeddings not working");
-    }
 
 
 
     // 🏷️ Add metadata properly
 
+    const pdf_id = uuidv4(); // Generate unique PDF ID
+
     const docsWithMetadata = splitDocs.map((doc) => ({
-  pageContent: doc.pageContent,
-  metadata: {
-    source: doc.metadata.source || "",
-    page: doc.metadata.loc?.pageNumber || 0, // flatten
-    user_email,
-    file_name: req.file.originalname,
-  },
-}));
+      pageContent: doc.pageContent,
+      metadata: {
+        source: doc.metadata.source || "",
+        page: doc.metadata.loc?.pageNumber || 0, // flatten
+        user_email,
+        file_name: req.file.originalname,
+        pdf_id: pdf_id, // Add PDF ID to metadata
+
+      },
+    }));
 
     console.log("🏷️ Metadata added to chunks. Sample metadata:", docsWithMetadata[0]);
 
@@ -107,23 +96,21 @@ uploadRoutes.post("/file", upload.single("file"), async (req, res) => {
     }
 
     // Vector store in Chroma
-    console.log("🚀 Storing data in Chroma...") ;
+    console.log("🚀 Storing data in Chroma...");
     await chromaStore.addDocuments(docsWithMetadata);
     console.log("✅ Stored successfully in Chroma");
 
-
-
-
     // 💾 Save in MongoDB
-   /* const newUpload = new uploadedPdf({
+    const newUpload = new Pdf({
       user_email,
+      pdf_id,
       filename: req.file.originalname,
       size_bytes: req.file.size,
     });
 
     await newUpload.save();
     console.log("🗄️ Saved to MongoDB");
-      */
+
 
     // 🧹 Delete temp file
     fs.unlinkSync(filePath);
@@ -131,7 +118,7 @@ uploadRoutes.post("/file", upload.single("file"), async (req, res) => {
 
     // ✅ Response
     res.status(200).json({
-      message: "File uploaded and processed successfully 🚀",
+      message: "File uploaded successfully 🚀",
       file: {
         filename: req.file.originalname,
         size_bytes: req.file.size,
@@ -146,6 +133,4 @@ uploadRoutes.post("/file", upload.single("file"), async (req, res) => {
       details: error.message || "Unknown server error",
     });
   }
-});
-
-export default uploadRoutes;
+};
