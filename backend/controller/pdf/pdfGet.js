@@ -1,6 +1,5 @@
 import express from "express";
-import pdfSchema from "../models/pdfSchema";
-
+import pdfSchema from "../../models/pdfSchema.js";
 // GET PDFs by user email
 export const pdfGet= async (req, res) => {
   try {
@@ -22,4 +21,4 @@ export const pdfGet= async (req, res) => {
   }
 };
 
-export default pdfGetRoute;
+export default pdfGet;

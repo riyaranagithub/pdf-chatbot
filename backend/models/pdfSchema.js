@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 
 const pdfSchema = new mongoose.Schema(
   {
+    pdf_id:{
+      type:String,
+      required:true
+    },
     user_email: {
       type: String,
       required: true,

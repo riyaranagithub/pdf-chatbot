@@ -2,10 +2,15 @@ import { Router } from "express";
 import { pdfDelete } from "../controller/pdf/pdfDelete.js";
 import { pdfGet } from "../controller/pdf/pdfGet.js";
 import { pdfUpload } from "../controller/pdf/pdfUpload.js";
+import multer from "multer";
 
 const pdfRoute = Router();  
 
-pdfRoute.post("/pdfUpload", pdfUpload);
+// Multer memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+pdfRoute.post("/pdfUpload", upload.single("file"), pdfUpload);
 pdfRoute.get("/pdfGet", pdfGet);
 pdfRoute.delete("/pdfDelete/:pdf_id", pdfDelete);
 

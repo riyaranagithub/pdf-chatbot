@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const sessionSchema = new mongoose.Schema({
   session_id: {
     type: String,
@@ -24,4 +26,4 @@ const sessionSchema = new mongoose.Schema({
   timestamps: { createdAt: "created_at", updatedAt: false }
 });
 
-export const Session = mongoose.model("Session", sessionSchema);
+export default mongoose.model("Session", sessionSchema);

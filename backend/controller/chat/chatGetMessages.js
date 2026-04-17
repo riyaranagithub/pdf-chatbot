@@ -1,4 +1,4 @@
-import Chat from "../../models/chatSchema";
+import Chat from "../../models/chatSchema.js";
 export const chatGetMessages = async (req, res) => {
   try {
     const { session_id } = req.query;

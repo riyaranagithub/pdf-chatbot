@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { sessionCreate } from "../controller/session/sessionCreate";
-import { sessionDelete } from "../controller/session/sessionDelete";
-import { sessionGetAll } from "../controller/session/sessionGetAll";
-import { sessionGetById } from "../controller/session/sessionGetById";
+import { sessionCreate } from "../controller/session/sessionCreate.js";
+import { sessionDelete } from "../controller/session/sessionDelete.js";
+import { sessionGetAll } from "../controller/session/sessionGetAll.js";
+import { sessionGetById } from "../controller/session/sessionGetById.js";
 
 
 const sessionRoute = Router();

@@ -1,3 +1,5 @@
+import Session from "../../models/sessionSchema.js"
+
 export const sessionGetById = async (req, res) => {
   try {
     const { session_id } = req.params;

@@ -6,13 +6,18 @@ const embeddings = new GoogleGenerativeAIEmbeddings({
   model: "gemini-embedding-001",
 });
 
-export const chromaStore = new Chroma(embeddings, {
-  collectionName: "pdf-docs",
-  url: " http://localhost:8000",
-  auth: {
-    provider: "token",
-    credentials: process.env.CHROMA_API_KEY,
+export const chromaStore = await Chroma.fromExistingCollection(embeddings, {
+  collectionName: "pdfs",
+
+  // 🔐 API Key
+  chromaCloudAPIKey: process.env.CHROMA_API_KEY,
+
+  // 🌐 Cloud connection
+  clientParams: {
+    host: "api.trychroma.com",
+    port: 8000,
+    ssl: true,
+    tenant: process.env.CHROMA_TENANT,
+    database: process.env.CHROMA_DATABASE,
   },
-  tenant: process.env.CHROMA_TENANT,
-  database: process.env.CHROMA_DATABASE,
 });

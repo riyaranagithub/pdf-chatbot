@@ -1,10 +1,10 @@
 import { Router } from "express";
-import uploadedPdf from "../models/uploadedPdf.js";
-import Chat from "../models/Chat.js"; // if you created
-import Session from "../models/Session.js"; // if you created
-import { chromaStore } from "../utils/cromaStore.js";
+import Pdf from "../../models/pdfSchema.js"
+import Chat from "../../models/chatSchema.js";
+import Session from "../../models/sessionSchema.js";
+import { chromaStore } from "../../utils/cromaStore.js";
 
-export const pdfDelete =  async (req, res) => {
+export const pdfDelete = async (req, res) => {
   const { pdf_id } = req.params;
   const { user_email } = req.body;
 
@@ -12,7 +12,7 @@ export const pdfDelete =  async (req, res) => {
     console.log("🗑️ Delete request for PDF:", pdf_id);
 
     // 🔒 Safety check
-    const pdf = await uploadedPdf.findOne({ _id: pdf_id, user_email });
+    const pdf = await Pdf.findOne({ pdf_id, user_email });
 
     if (!pdf) {
       return res.status(404).json({ error: "PDF not found or unauthorized" });
@@ -26,32 +26,24 @@ export const pdfDelete =  async (req, res) => {
 
     // Option A: delete via metadata (if supported)
     try {
-      await chromaStore.delete({
-        filter: {
-          pdf_id: pdf_id,
-        },
-      });
+    
+     await chromaStore.delete({
+        filter: { pdf_id: pdf_id }
+  });
+
       console.log("✅ Deleted from Chroma using metadata");
     } catch (err) {
-      console.log("⚠️ Metadata delete failed, fallback to IDs");
+      
+      console.log("Delete failed in chroma",err);
+      return;
 
-      // Option B: fallback using IDs
-      // ⚠️ only works if you used custom ids during insert
-      const ids = [];
-
-      for (let i = 0; i < 10000; i++) {
-        ids.push(`${pdf_id}_${i}`);
-      }
-
-      await chromaStore.delete({ ids });
-      console.log("✅ Deleted from Chroma using IDs");
     }
 
     // =========================
     // 🗄️ 2. DELETE FROM MONGODB
     // =========================
 
-    await uploadedPdf.deleteOne({ _id: pdf_id });
+    await Pdf.deleteOne({ pdf_id: pdf_id });
 
     // Optional (if using chat system)
     await Chat.deleteMany({ pdf_id });

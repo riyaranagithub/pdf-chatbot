@@ -1,6 +1,6 @@
-import Chat from "../models/Chat.js";
-import Session from "../models/Session.js";
-import { chromaStore } from "../utils/cromaStore.js";
+import Chat from "../../models/chatSchema.js";
+import Session from "../../models/sessionSchema.js";
+import { chromaStore } from "../../utils/cromaStore.js";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";

@@ -1,3 +1,4 @@
+console.log("🚀 APP STARTED--new change");
 import express from "express";
 import env from "dotenv";
 import cors from "cors";
@@ -13,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+console.log("🔥 NEW CODE RUNNING")
 // Routes
 app.use("/pdf", pdfRoute);
 app.use("/session", sessionRoute);

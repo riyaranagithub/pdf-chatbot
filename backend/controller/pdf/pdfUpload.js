@@ -1,4 +1,3 @@
-import multer from "multer";
 import { Router } from "express";
 import Pdf from "../../models/pdfSchema.js";
 import fs from "fs";
@@ -6,22 +5,17 @@ import path from "path";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import { chromaStore } from "../utils/cromaStore.js";
+import { chromaStore } from "../../utils/cromaStore.js";
 import { v4 as uuidv4 } from "uuid";
 
 
-// Multer memory storage
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
 
 export const pdfUpload =async (req, res) => {
   console.log("📥 Upload request received");
+  console.log("BODY:", req.body);
 
   try {
-    const { user_email } = req.body;
-
-    console.log("📧 User email:", user_email);
-    console.log("📄 File info:", req.file?.originalname);
+      const { user_email } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -30,6 +24,8 @@ export const pdfUpload =async (req, res) => {
     if (!user_email) {
       return res.status(400).json({ error: "Valid email is required" });
     }
+
+  
 
     // 📁 Create uploads folder
     const uploadsDir = path.join(process.cwd(), "uploads");
@@ -70,14 +66,17 @@ export const pdfUpload =async (req, res) => {
       model: "gemini-embedding-2-preview",
     });
 
-
+     // 🧹 Remove empty chunks
+    const cleanDocs = splitDocs.filter(
+      (doc) => doc.pageContent && doc.pageContent.trim().length > 0
+    );
 
 
     // 🏷️ Add metadata properly
 
     const pdf_id = uuidv4(); // Generate unique PDF ID
 
-    const docsWithMetadata = splitDocs.map((doc) => ({
+    const docsWithMetadata = cleanDocs.map((doc) => ({
       pageContent: doc.pageContent,
       metadata: {
         source: doc.metadata.source || "",
@@ -100,11 +99,14 @@ export const pdfUpload =async (req, res) => {
     await chromaStore.addDocuments(docsWithMetadata);
     console.log("✅ Stored successfully in Chroma");
 
+    //get document in chroma
+    
+
     // 💾 Save in MongoDB
     const newUpload = new Pdf({
       user_email,
       pdf_id,
-      filename: req.file.originalname,
+      file_name: req.file.originalname,
       size_bytes: req.file.size,
     });
 

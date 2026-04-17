@@ -1,6 +1,10 @@
+import Session from "../../models/sessionSchema.js";
+
 export const sessionGetAll = async (req, res) => {
   try {
-    const { user_email } = req.query;
+    console.log("request to get all sessions")
+    console.log(req.body)
+    const { user_email } = req.body;
 
     const sessions = await Session.find({ user_email })
       .sort({ created_at: -1 });

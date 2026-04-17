@@ -1,7 +1,9 @@
-import Chat from "../models/chatSchema.js";
+import Chat from "../../models/chatSchema.js";
+import Session from "../../models/sessionSchema.js";
 
 export const sessionDelete = async (req, res) => {
   try {
+    console.log("request to delete session...")
     const { session_id } = req.params;
     const { user_email } = req.body;
 
